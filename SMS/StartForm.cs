@@ -17,6 +17,8 @@ namespace SMS
         }
 
         private DataTable dt;
+        private State endState = State.s5;
+        private int EPS = 15;
         /// <summary>
         /// Инициализация Матрицы состояния по умолчанию
         /// </summary>
@@ -135,8 +137,6 @@ namespace SMS
                 {
                     array[i] = CalcAdvanced(array[i - 1]);
                 }
-                //Calc(CountX2, ref array);
-
 
                 DataTable[] dt_res = new DataTable[2];
 
@@ -175,8 +175,6 @@ namespace SMS
 
                 ResultForm rf = new ResultForm(dt_res);
                 rf.ShowDialog();
-
-                
             }
             catch (FormatException ex)
             {
@@ -218,13 +216,24 @@ namespace SMS
                 double sum = 0;
                 for (int k = 0; k < dt.Rows.Count; k++)
                 {
-                    sum += inputValues[k] * Convert.ToDouble(dt.Rows[k].ItemArray.ElementAt(j));
+                    sum += Math.Round(inputValues[k] * Convert.ToDouble(dt.Rows[k].ItemArray.ElementAt(j)), EPS, MidpointRounding.AwayFromZero);
                 }
                 outputValues[j] = sum;
             }
+
             return outputValues;
         }
 
+        public Dictionary<int, double> GetSortedDictionary(double[] Source)
+        {
+            Dictionary<int, double> outputDictionary = new Dictionary<int, double>();
+            for (int i = 0; i < Source.Length; i++)
+            {
+                outputDictionary.Add(i, Source[i]);
+            }
+
+            return outputDictionary.OrderBy(val => val.Value).ToDictionary(x => x.Key, x => x.Value);
+        }
         private void Run_Click(object sender, EventArgs e)
         {
             try
@@ -234,9 +243,75 @@ namespace SMS
                 {
                     throw new SMSException("Количество экспериментов указано в неверном формате");
                 }
+                var rows = dt.Select();
+                for (int i = 0; i < rows.Count<DataRow>(); i++)
+                {
+                    double sum = 0;
+                    for (int j = 0; j < dt.Rows[i].ItemArray.Length; j++)
+                    {
+                        sum += Convert.ToDouble(rows[i][j]);
+                    }
 
-                
+                    if (sum > 1 || sum < 0)
+                    {
+                        throw new SMSException($"Строка {i} имеет неверный формат. Сумма значений строки должна быть больше или равно 0, и меньше или равно 1.");
+                    }
+                    dt.Rows[i][i] = 1 - sum;
+                }
+                List<double[]> array = new List<double[]>();
+                array.Add(new double[dt.Rows[0].ItemArray.Length]);
+                // Заполняем начальными значениями
+                for (int j = 0; j < dt.Rows[0].ItemArray.Length; j++)
+                {
+                    array[0][j] = Convert.ToDouble(rows[0][j]);
+                }
 
+                List<Dictionary<int, double>> Dict = new List<Dictionary<int, double>>();
+                Dict.Add(GetSortedDictionary(array[0]));
+
+                int maxStep = 1;// Максимальный шаг для серии
+                int[] stat = new int[Count];
+
+                Random rnd = new Random();
+                for (int i = 0; i < Count; i++)
+                {
+                    State thisState = State.s1;
+                    int currentStep = 0;// текущий вычисленный шаг
+
+                    while (thisState != endState)
+                    {
+                        double c = rnd.NextDouble();
+                        if(array.Count < (currentStep + 1))
+                        {
+                            array.Add(CalcAdvanced(array[array.Count - 1]));
+                            Dict.Add(GetSortedDictionary(array[array.Count - 1]));
+                        }
+
+                        int ch = 1;
+                        foreach (var item in Dict[currentStep])
+                        {
+                            if (c < item.Value || ch == Dict[currentStep].Count)
+                            {
+                                thisState = (State)(item.Key + 1);
+                                break;
+                            }
+                            ch++;
+                        }
+
+                        currentStep++;
+                    }
+                    stat[i] = currentStep;
+                    if((currentStep + 1) > maxStep)
+                    {
+                        maxStep = currentStep + 1;// Новый максимальный шаг для серии
+                    }
+                    
+                    
+
+                }
+                int max = stat.Max();
+                int min = stat.Min();
+                double avg = stat.Average();
 
             }
             catch (FormatException ex)
@@ -260,7 +335,7 @@ namespace SMS
         s2 = 2,
         s3 = 3,
         s4 = 4,
-        s5 = 5,
+        s5 = 5,//конечное
         s6 = 6,
     }
 
