@@ -123,14 +123,19 @@ namespace SMS
                 }
 
                 int CountX2 = Count * 2;
-                double[,] array = new double[CountX2, 6];
+                double[][] array = new double[CountX2][];
+                array[0] = new double[dt.Rows[0].ItemArray.Length];
                 // Заполняем начальными значениями
                 for (int j = 0; j < dt.Rows[0].ItemArray.Length; j++)
                 {
-                    array[0, j] = Convert.ToDouble(rows[0][j]);
+                    array[0][j] = Convert.ToDouble(rows[0][j]);
                 }
 
-                Calc(CountX2, ref array);
+                for (int i = 1; i < CountX2; i++)
+                {
+                    array[i] = CalcAdvanced(array[i - 1]);
+                }
+                //Calc(CountX2, ref array);
 
 
                 DataTable[] dt_res = new DataTable[2];
@@ -147,7 +152,6 @@ namespace SMS
                     dt_res[i].Columns.Add(State.s6.ToString());
                 }
                     
-                
 
                 for (int i = 0; i < CountX2; i++)
                 {
@@ -155,7 +159,7 @@ namespace SMS
                     arr[0] = i + 1;
                     for (int j = 0; j < dt.Rows[0].ItemArray.Length; j++)
                     {
-                        arr[j + 1] = array[i, j];
+                        arr[j + 1] = array[i][j];
                     }
                     if(i >= Count)
                     {
@@ -206,7 +210,7 @@ namespace SMS
             }
         }
 
-        private double[] CalcAdvanced(double[] inputValues, int startStep = 1)
+        private double[] CalcAdvanced(double[] inputValues)
         {
             double[] outputValues = new double[inputValues.Length];
             for (int j = 0; j < inputValues.Length; j++)
