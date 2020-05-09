@@ -35,7 +35,11 @@
             this.label2 = new System.Windows.Forms.Label();
             this.NumberOfExperiments = new System.Windows.Forms.TextBox();
             this.Run = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.MatrixOfState)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // MatrixOfState
@@ -48,10 +52,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MatrixOfState.BackgroundColor = System.Drawing.Color.WhiteSmoke;
             this.MatrixOfState.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.MatrixOfState.Location = new System.Drawing.Point(12, 12);
+            this.MatrixOfState.Location = new System.Drawing.Point(12, 27);
             this.MatrixOfState.MultiSelect = false;
             this.MatrixOfState.Name = "MatrixOfState";
-            this.MatrixOfState.Size = new System.Drawing.Size(776, 283);
+            this.MatrixOfState.Size = new System.Drawing.Size(776, 268);
             this.MatrixOfState.TabIndex = 0;
             // 
             // Start
@@ -107,13 +111,39 @@
             // 
             // Run
             // 
-            this.Run.Location = new System.Drawing.Point(338, 306);
+            this.Run.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Run.Location = new System.Drawing.Point(338, 303);
             this.Run.Name = "Run";
-            this.Run.Size = new System.Drawing.Size(75, 23);
+            this.Run.Size = new System.Drawing.Size(123, 29);
             this.Run.TabIndex = 6;
-            this.Run.Text = "Запуск";
+            this.Run.Text = "Моделировать";
             this.Run.UseVisualStyleBackColor = true;
             this.Run.Click += new System.EventHandler(this.Run_Click);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.helpToolStripMenuItem,
+            this.aboutToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
+            this.menuStrip1.TabIndex = 7;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // StartForm
             // 
@@ -127,10 +157,14 @@
             this.Controls.Add(this.CountStep);
             this.Controls.Add(this.Start);
             this.Controls.Add(this.MatrixOfState);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "StartForm";
             this.Text = "СМО";
             this.Load += new System.EventHandler(this.StartForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.MatrixOfState)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -145,6 +179,9 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox NumberOfExperiments;
         private System.Windows.Forms.Button Run;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
     }
 }
 

@@ -19,12 +19,13 @@ namespace SMS
         private DataTable dt;
         private State endState = State.s5;
         private int EPS = 15;
+        private int Lenght;
         /// <summary>
         /// Инициализация Матрицы состояния по умолчанию
         /// </summary>
         private void MatrixOfStateInitDefault()
         {
-            int length = 6;
+            Lenght = 6;
             dt = new DataTable();
 
             dt.Columns.Add(State.s1.ToString());
@@ -54,9 +55,9 @@ namespace SMS
 
             MatrixOfState.DataSource = dt;
 
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < Lenght; i++)
             {
-                for (var j = 0; j < length; j++)
+                for (var j = 0; j < Lenght; j++)
                 {
                     MatrixOfState.Rows[i].Cells[j].ValueType = typeof(double);
                     var cell = MatrixOfState.Rows[i].Cells[j].Value.ToString();
@@ -259,40 +260,56 @@ namespace SMS
                     dt.Rows[i][i] = 1 - sum;
                 }
                 List<double[]> array = new List<double[]>();
-                array.Add(new double[dt.Rows[0].ItemArray.Length]);
                 // Заполняем начальными значениями
-                for (int j = 0; j < dt.Rows[0].ItemArray.Length; j++)
+                for (int i = 0; i < Lenght; i++)
                 {
-                    array[0][j] = Convert.ToDouble(rows[0][j]);
+                    array.Add(new double[Lenght]);
+                    for (int j = 0; j < Lenght; j++)
+                    {
+                        array[i][j] = Convert.ToDouble(rows[i][j]);
+                    }
                 }
 
                 List<Dictionary<int, double>> Dict = new List<Dictionary<int, double>>();
-                Dict.Add(GetSortedDictionary(array[0]));
+
+                foreach (var item in array)
+                {
+                    Dict.Add(GetSortedDictionary(item));
+                }
 
                 int maxStep = 1;// Максимальный шаг для серии
                 int[] stat = new int[Count];
 
+                List<State> statState = new List<State>();
+
+                Dictionary<KeyValuePair<State, State>, int> pereh = new Dictionary<KeyValuePair<State, State>, int>();
                 Random rnd = new Random();
                 for (int i = 0; i < Count; i++)
                 {
                     State thisState = State.s1;
+                    statState.Add(thisState);
                     int currentStep = 0;// текущий вычисленный шаг
 
                     while (thisState != endState)
                     {
                         double c = rnd.NextDouble();
-                        if(array.Count < (currentStep + 1))
-                        {
-                            array.Add(CalcAdvanced(array[array.Count - 1]));
-                            Dict.Add(GetSortedDictionary(array[array.Count - 1]));
-                        }
 
-                        int ch = 1;
-                        foreach (var item in Dict[currentStep])
+                        int ch = 1;// Счётчик
+                        foreach (var item in Dict[(int)(thisState) - 1])
                         {
-                            if (c < item.Value || ch == Dict[currentStep].Count)
+                            if (c < item.Value || ch == Lenght)
                             {
-                                thisState = (State)(item.Key + 1);
+                                KeyValuePair<State, State> tmp = new KeyValuePair<State, State>(thisState, (State)(item.Key + 1));
+                                if (pereh.ContainsKey(tmp))
+                                {
+                                    pereh[tmp]++;
+                                }
+                                else
+                                {
+                                    pereh.Add(tmp, 1);
+                                }
+                                thisState = tmp.Value;
+                                statState.Add(thisState);
                                 break;
                             }
                             ch++;
@@ -300,19 +317,26 @@ namespace SMS
 
                         currentStep++;
                     }
-                    stat[i] = currentStep;
-                    if((currentStep + 1) > maxStep)
-                    {
-                        maxStep = currentStep + 1;// Новый максимальный шаг для серии
-                    }
-                    
-                    
 
+                    stat[i] = currentStep + 1;
                 }
                 int max = stat.Max();
                 int min = stat.Min();
                 double avg = stat.Average();
+                int CountMin = stat.Where(x => x == min).Count();
+                
+                var frequency = statState.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+                
 
+                int sumFrequency = frequency.Sum(x => x.Value);
+                Dictionary<State, double> relativeFrequency = new Dictionary<State, double>();
+                foreach (var item in frequency)
+                {
+                    relativeFrequency.Add(item.Key, ((double)item.Value / sumFrequency) * 100);
+                }
+
+                ModelingResultForm mrf = new ModelingResultForm(Count, max, min, avg, CountMin, frequency, relativeFrequency, pereh);
+                mrf.ShowDialog();
             }
             catch (FormatException ex)
             {
@@ -326,6 +350,16 @@ namespace SMS
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Сергей Жимерин 4В 120861 (с) 2020", "Об авторе", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

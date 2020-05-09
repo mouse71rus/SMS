@@ -87,7 +87,7 @@
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.MatrixOfState);
             this.Name = "ResultForm";
-            this.Text = "ResultForm";
+            this.Text = "Вероятности переходов";
             ((System.ComponentModel.ISupportInitialize)(this.MatrixOfState)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
