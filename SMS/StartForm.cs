@@ -193,22 +193,6 @@ namespace SMS
 
         }
 
-        private void Calc(int Count , ref double[,] array, int startStep = 1)
-        {
-            for (int i = startStep; i < Count; i++)
-            {
-                for (int j = 0; j < dt.Rows[0].ItemArray.Length; j++)
-                {
-                    double sum = 0;
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        sum += array[i - 1, k] * Convert.ToDouble(dt.Rows[k].ItemArray.ElementAt(j));
-                    }
-                    array[i, j] = sum;
-                }
-            }
-        }
-
         private double[] CalcAdvanced(double[] inputValues)
         {
             double[] outputValues = new double[inputValues.Length];
