@@ -277,7 +277,6 @@ namespace SMS
                     Dict.Add(GetSortedDictionary(item));
                 }
 
-                int maxStep = 1;// Максимальный шаг для серии
                 int[] stat = new int[Count];
 
                 List<State> statState = new List<State>();
@@ -359,7 +358,7 @@ namespace SMS
 
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            MessageBox.Show("5 вариант\nПусть процесс стационарного лечения больного описывается размеченным графом состояний и переходов, ГСП (рис.1-7), в котором вершины – возможные состояния пациента, а ребра – изменения этих состояний в результате лечебных процедур. Состояниям соответствуют вершины графа, переходам – ребра графа, «вес» ребра соответствует вероятности перехода из одного состояния в другое. Для всех вариантов исходным является состояние 1. ", "Помощь", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 
